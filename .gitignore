@@ -31,3 +31,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Gradle (if accidentally present)
+.gradle/
+gradle/
+*.gradle
+
