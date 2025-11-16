@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="description" content="Convert JSON to TOON format - A compact, token-efficient format for LLM prompts. Save 30-60% tokens with TOON format.">
+  <meta name="keywords" content="toon, json, converter, llm, token-efficient, token-oriented object notation, json converter">
+  <meta name="author" content="ydrgzm">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="JSON to TOON Converter">
+  <meta property="og:description" content="Convert JSON to TOON format - Save 30-60% tokens for LLM prompts">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="JSON to TOON Converter">
+  <meta property="twitter:description" content="Convert JSON to TOON format - Save 30-60% tokens for LLM prompts">
+  
+  <title>JSON to TOON Converter - Token-Efficient Format for LLM Prompts</title>
+  <link rel="stylesheet" href="src/css/styles.css">
+  <link rel="stylesheet" href="src/css/theme.css">
+  <link rel="stylesheet" href="src/css/components.css">
+  <link rel="stylesheet" href="src/css/responsive.css">
+</head>
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="toon-logo">
+          <div class="logo-square logo-top">TO</div>
+          <div class="logo-square logo-bottom">ON</div>
+        </div>
+        <div class="header-text">
+          <h1 class="title">Token-Oriented Object Notation</h1>
+          <p class="subtitle">Compact, human-readable format for serializing JSON data in LLM prompts</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workflow Diagram -->
+  <section class="workflow-section">
+    <div class="workflow-container">
+      <span class="workflow-label">Workflow:</span>
+      <div class="workflow-diagram">
+        <div class="workflow-box json-box">JSON</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-box encode-box">encode()</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-box toon-box">TOON</div>
+        <div class="workflow-arrow">→</div>
+        <div class="workflow-box llm-box">LLM</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Conversion Area -->
+  <main class="main-content">
+    <!-- Conversion Mode Toggle -->
+    <div class="mode-toggle-container">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="modeJsonToToon" data-mode="json-to-toon" aria-label="Convert JSON to TOON">
+          <span>JSON → TOON</span>
+        </button>
+        <button class="mode-btn" id="modeToonToJson" data-mode="toon-to-json" aria-label="Convert TOON to JSON">
+          <span>TOON → JSON</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="conversion-container">
+      <!-- Input Section -->
+      <div class="input-section">
+        <div class="section-header">
+          <h2 id="inputLabel">JSON Input</h2>
+          <div class="input-actions">
+            <div class="example-dropdown">
+              <button class="btn btn-secondary" id="loadExampleBtn">Load Example ▼</button>
+              <div class="dropdown-menu" id="exampleMenu" style="display: none;">
+                <button class="dropdown-item" data-example="simple">Simple Object</button>
+                <button class="dropdown-item" data-example="tabular">Tabular Array</button>
+                <button class="dropdown-item" data-example="nested">Nested Structure</button>
+              </div>
+            </div>
+            <label for="fileInput" class="btn btn-secondary">Upload File</label>
+            <input type="file" id="fileInput" accept=".json" style="display: none;">
+            <button class="btn btn-secondary" id="formatJsonBtn">Format JSON</button>
+          </div>
+        </div>
+        <div class="editor-container">
+          <div class="drop-zone" id="dropZone">
+            <textarea 
+              id="jsonInput" 
+              class="editor json-editor" 
+              placeholder='Enter or paste JSON here...&#10;&#10;Example:&#10;{&#10;  "users": [&#10;    { "id": 1, "name": "Alice", "role": "admin" },&#10;    { "id": 2, "name": "Bob", "role": "user" }&#10;  ]&#10;}'
+              aria-label="JSON input"></textarea>
+            <div class="drop-overlay" id="dropOverlay">
+              <div class="drop-message">Drop JSON file here</div>
+            </div>
+          </div>
+          <div class="file-info" id="fileInfo" style="display: none;">
+            <span class="file-name" id="fileName"></span>
+            <span class="file-size" id="fileSize"></span>
+            <button class="btn-clear-file" id="clearFileBtn" aria-label="Clear file">×</button>
+          </div>
+          <div class="editor-footer">
+            <div class="validation-status" id="jsonValidation">
+              <span class="status-icon">✓</span>
+              <span class="status-text">Valid JSON</span>
+            </div>
+            <div class="char-count">
+              <span id="jsonCharCount">0</span> chars
+              <span class="separator">•</span>
+              <span id="jsonTokenCount">0</span> tokens
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Options Panel -->
+      <div class="options-panel">
+        <div class="options-header">
+          <h3>Conversion Options</h3>
+          <button class="btn-toggle" id="toggleOptions" aria-label="Toggle options">
+            <span class="toggle-icon">▼</span>
+          </button>
+        </div>
+        <div class="options-content" id="optionsContent">
+          <div class="option-group">
+            <label class="option-label">Delimiter:</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="delimiter" value="," checked>
+                <span>Comma (,)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="delimiter" value="\t">
+                <span>Tab (\t)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="delimiter" value="|">
+                <span>Pipe (|)</span>
+              </label>
+            </div>
+          </div>
+          <div class="option-group">
+            <label class="option-label">Indentation:</label>
+            <input type="number" id="indentSize" min="1" max="8" value="2" class="number-input">
+            <span class="option-hint">spaces</span>
+          </div>
+          <div class="option-group">
+            <label class="option-label">
+              <input type="checkbox" id="keyFolding">
+              <span>Key Folding (safe)</span>
+            </label>
+            <span class="option-hint">Collapse single-key wrapper chains</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Section -->
+      <div class="output-section">
+        <div class="section-header">
+          <h2 id="outputLabel">TOON Output</h2>
+          <div class="history-dropdown">
+            <button class="btn btn-secondary" id="historyBtn" aria-label="View conversion history" title="View History">
+              History
+            </button>
+            <div class="dropdown-menu" id="historyMenu" style="display: none;">
+              <div class="history-header">
+                <span>Recent Conversions</span>
+                <button class="btn-clear-history" id="clearHistoryBtn" aria-label="Clear history">Clear</button>
+              </div>
+              <div class="history-items" id="historyItems"></div>
+            </div>
+          </div>
+          <div class="output-actions">
+            <button class="btn btn-primary" id="copyBtn">Copy</button>
+            <button class="btn btn-primary" id="downloadBtn">Download</button>
+          </div>
+        </div>
+        <div class="editor-container">
+          <textarea 
+            id="toonOutput" 
+            class="editor toon-editor" 
+            readonly
+            placeholder="TOON output will appear here..."
+            aria-label="TOON output"></textarea>
+          <div class="editor-footer">
+            <div class="char-count">
+              <span id="toonCharCount">0</span> chars
+              <span class="separator">•</span>
+              <span id="toonTokenCount">0</span> tokens
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Token Comparison Section -->
+    <section class="token-comparison">
+      <div class="comparison-header">
+        <h2>Token Comparison</h2>
+        <span class="comparison-label">Ø Tokens:</span>
+      </div>
+      <div class="token-bars">
+        <div class="token-bar-container">
+          <div class="token-bar-label">JSON</div>
+          <div class="token-bar-wrapper">
+            <div class="token-bar json-bar" id="jsonTokenBar">
+              <span class="token-count" id="jsonTokenDisplay">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="token-bar-container">
+          <div class="token-bar-label">TOON</div>
+          <div class="token-bar-wrapper">
+            <div class="token-bar toon-bar" id="toonTokenBar">
+              <span class="token-count" id="toonTokenDisplay">0</span>
+            </div>
+            <div class="token-bar-savings" id="savingsBar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="savings-info">
+        <span class="savings-percentage" id="savingsPercentage">≈0% less</span>
+        <span class="savings-tokens" id="savingsTokens">0 tokens saved</span>
+      </div>
+    </section>
+
+    <!-- Help Section -->
+    <section class="help-section">
+      <details class="help-details">
+        <summary class="help-summary">
+          <h3>What is TOON?</h3>
+          <span class="help-icon">ℹ️</span>
+        </summary>
+        <div class="help-content">
+          <p><strong>Token-Oriented Object Notation (TOON)</strong> is a compact, human-readable format for serializing JSON data in LLM prompts.</p>
+          <p>TOON combines YAML's indentation-based structure with CSV-style tabular layout for uniform arrays, achieving <strong>30-60% token reduction</strong> compared to standard JSON.</p>
+          <h4>Key Features:</h4>
+          <ul>
+            <li>💸 <strong>Token-efficient:</strong> 30-60% fewer tokens on large uniform arrays</li>
+            <li>🤿 <strong>LLM-friendly:</strong> Explicit lengths and fields enable validation</li>
+            <li>🍱 <strong>Minimal syntax:</strong> Removes redundant punctuation</li>
+            <li>📐 <strong>Indentation-based:</strong> Like YAML, uses whitespace instead of braces</li>
+            <li>🧺 <strong>Tabular arrays:</strong> Declare keys once, stream data as rows</li>
+          </ul>
+          <h4>Example:</h4>
+          <pre><code>// JSON
+{
+  "users": [
+    { "id": 1, "name": "Alice", "role": "admin" },
+    { "id": 2, "name": "Bob", "role": "user" }
+  ]
+}
+
+// TOON
+users[2]{id,name,role}:
+  1,Alice,admin
+  2,Bob,user</code></pre>
+          <p><a href="https://github.com/toon-format/toon" target="_blank" rel="noopener noreferrer">Learn more about TOON format →</a></p>
+        </div>
+      </details>
+    </section>
+
+    <!-- Comparison Table Section -->
+    <section class="comparison-table-section">
+      <div class="comparison-table">
+        <div class="table-header">
+          <div class="table-cell"></div>
+          <div class="table-cell">avg tokens</div>
+          <div class="table-cell">retrieval accuracy</div>
+          <div class="table-cell">best for</div>
+        </div>
+        <div class="table-row">
+          <div class="table-cell row-label">TOON →</div>
+          <div class="table-cell">
+            <div class="token-bar-inline toon-inline" id="toonInlineBar"></div>
+          </div>
+          <div class="table-cell">73.9%</div>
+          <div class="table-cell">repeated structure • tables</div>
+        </div>
+        <div class="table-row">
+          <div class="table-cell row-label">JSON →</div>
+          <div class="table-cell">
+            <div class="token-bar-inline json-inline" id="jsonInlineBar"></div>
+          </div>
+          <div class="table-cell">69.7%</div>
+          <div class="table-cell">varying fields • deep trees</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>Token-Oriented Object Notation Converter</p>
+      <div class="footer-links">
+        <a href="https://github.com/toon-format/toon" target="_blank" rel="noopener noreferrer">TOON Format</a>
+        <span class="separator">•</span>
+        <a href="https://github.com/ydrgzm" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
+

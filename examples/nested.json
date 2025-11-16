@@ -1,0 +1,15 @@
+{
+  "order": {
+    "id": "ORD-001",
+    "customer": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "items": [
+      { "product": "Widget", "quantity": 2, "price": 19.99 },
+      { "product": "Gadget", "quantity": 1, "price": 29.99 }
+    ],
+    "total": 69.97
+  }
+}
+
